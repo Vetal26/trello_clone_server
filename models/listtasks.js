@@ -4,13 +4,13 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class ListTasks extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Board, {
+        foreignKey: 'BoardId'
+      });
+      this.hasMany(models.Task, {
+        foreignKey: 'listTasksId'
+      });
     }
   };
   ListTasks.init({

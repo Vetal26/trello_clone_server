@@ -8,7 +8,7 @@
     "db:create": "sequelize-cli db:create",
     "db:migrate": "sequelize-cli db:migrate",
     "db:g:migration": "sequelize-cli migration:generate --name",
-    "db:migrate:undo": "sequelize-cli db:migrate:undo",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo:all",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +24,7 @@
   "homepage": "https://github.com/Vetal26/trello_clone_server#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "pg": "^8.6.0",
