@@ -5,8 +5,8 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Task extends Model {
     static associate(models) {
-      this.belongsTo(models.ListTasks, {
-        foreignKey: 'listTasksId'
+      this.belongsTo(models.TaskList, {
+        foreignKey: 'taskListId'
       });
     }
   };

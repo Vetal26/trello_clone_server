@@ -8,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const models = require('./models');
 
-const { User, Board, Task, User_Board, ListTasks } = models;
+const { User, Board, Task, User_Board, TaskList } = models;
 const port = process.env.PORT;
 
 const lists = ['To Do', 'In Process', 'Coded', 'Testing', 'Done'];
@@ -26,14 +26,27 @@ app.get('/boards', async (req, res) => {
   res.json(boards);
 });
 
+app.get('/boards/:id', async (req, res) => {
+  const { id } = req.params
+  const board = await Board.findByPk( id , {
+    include: {
+      model: TaskList,
+      include: {
+        model: Task
+      }
+    }
+  });
+  res.json(board);
+});
+
 app.post('/boards', async (req, res) => {
-  const listTasks = []
+  const taskLists = []
   for(nameList of lists) {
-    const listTask = await ListTasks.create({ name: nameList })
-    listTasks.push(listTask);
+    const taskList = await TaskList.create({ name: nameList })
+    taskLists.push(taskList);
   }
   const board = await Board.create({ name: req.body.name });
-  await board.addListTask(listTasks);
+  await board.addTaskList(taskLists);
   res.json(board);
   //res.status(500).send({ message: err.message }));
 });

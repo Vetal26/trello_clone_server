@@ -3,21 +3,21 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class ListTasks extends Model {
+  class TaskList extends Model {
     static associate(models) {
       this.belongsTo(models.Board, {
         foreignKey: 'BoardId'
       });
       this.hasMany(models.Task, {
-        foreignKey: 'listTasksId'
+        foreignKey: 'taskListId'
       });
     }
   };
-  ListTasks.init({
+  TaskList.init({
     name: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'ListTasks',
+    modelName: 'TaskList',
   });
-  return ListTasks;
+  return TaskList;
 };
