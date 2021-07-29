@@ -29,14 +29,17 @@ router.post('/login', async (req, res, next) => {
 router.post('/register', async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
+    const isExistsUser = await User.findOne({where: { email }})
+    if(isExistsUser) {
+      return res.status(409).json({ message: 'User with email already exists!' });
+    }
     const newUser = new User({
       email: email,
       password: await genPasswordHash(password),
     });
 
     const user = await newUser.save();
-
+    
     res.status(200).json({token: createToken(user.id), userId: user.id});
   } catch (err) {
     res.json({ msg: err });

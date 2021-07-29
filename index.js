@@ -23,16 +23,6 @@ app.use(cors());
 
 app.use(require('./routes'));
 
-app.post('/tasks', async (req, res) => {
-  const task = await Task.create(req.body);
-  res.json(task);
-  //res.status(500).send({ message: err.message }));
-});
-
-app.put('/tasks/:id', async (req, res) => {
-  await Task.update( req.body, { where: { id: req.params.id}})
-})
-
 app.use(function (req, res) {
   res.status(404).send({ message: 'Opppps.... wrong way!' });
 });
