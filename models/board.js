@@ -7,6 +7,9 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.TaskList, {
         foreignKey: 'BoardId'
       });
+      this.hasMany(models.User_Board, { 
+        foreignKey: 'boardId'
+      });
     }
   };
   Board.init({

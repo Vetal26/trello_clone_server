@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.TaskList, {
         foreignKey: 'taskListId'
       });
+      // this.belongsToMany(models.User, {
+      //   through: 'User_Task',
+      //   foreignKey: 'TaskId'
+      // });
     }
   };
   Task.init({

@@ -2,6 +2,12 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('User_Boards', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       userId: {
         type: Sequelize.INTEGER,
         references: {
@@ -10,7 +16,6 @@ module.exports = {
           },
           key: 'id',
         },
-        allowNull: false
       },
       boardId: {
         type: Sequelize.INTEGER,
@@ -20,7 +25,6 @@ module.exports = {
           },
           key: 'id',
         },
-        allowNull: false
       },
       owner: {
         type: Sequelize.BOOLEAN,

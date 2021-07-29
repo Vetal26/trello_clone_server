@@ -23,10 +23,13 @@
   },
   "homepage": "https://github.com/Vetal26/trello_clone_server#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
     "pg": "^8.6.0",
     "sequelize": "^6.6.5"
   },
