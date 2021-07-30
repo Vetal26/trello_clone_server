@@ -13,7 +13,21 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Board.init({
-    name: DataTypes.STRING
+    name: {
+      allowNull: false,
+      unique: false,
+      type: DataTypes.STRING,
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'Board name is missing',
+        },
+        notEmpty: {
+          args: true,
+          msg: 'Board name is required',
+        },
+      },
+    }
   }, {
     sequelize,
     modelName: 'Board',

@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   User_Board.init({
-    owner: DataTypes.BOOLEAN,
+    owner: { 
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     sequelize,

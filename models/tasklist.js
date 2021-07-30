@@ -14,7 +14,21 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   TaskList.init({
-    name: DataTypes.STRING
+    name: {
+      allowNull: false,
+      unique: false,
+      type: DataTypes.STRING,
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'List name is missing',
+        },
+        notEmpty: {
+          args: true,
+          msg: 'List name is required',
+        },
+      },
+    },
   }, {
     sequelize,
     modelName: 'TaskList',

@@ -14,11 +14,11 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
-      status: {
-        type: Sequelize.STRING
+      isArchved: {
+        type: Sequelize.BOOLEAN
       },
       position: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

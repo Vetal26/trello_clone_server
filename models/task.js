@@ -15,10 +15,55 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Task.init({
-    title: DataTypes.STRING,
-    description: DataTypes.STRING,
-    status: DataTypes.STRING,
-    position: DataTypes.STRING
+    title: {
+      allowNull: false,
+      unique: false,
+      type: DataTypes.STRING,
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'Task title is missing',
+        },
+        notEmpty: {
+          args: true,
+          msg: 'Task title is required',
+        },
+      },
+    },
+    description: {
+      allowNull: false,
+      unique: false,
+      type: DataTypes.STRING,
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'Description is missing',
+        },
+        notEmpty: {
+          args: true,
+          msg: 'Description is required',
+        },
+      },
+    },
+    isArchved: { 
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    position: {
+      allowNull: false,
+      unique: false,
+      type: DataTypes.INTEGER,
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'Position is missing',
+        },
+        notEmpty: {
+          args: true,
+          msg: 'Position is required',
+        },
+      },
+    },
   }, {
     sequelize,
     modelName: 'Task',
