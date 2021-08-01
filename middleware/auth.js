@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
   const token = authHeader.replace('Bearer ', '');
 
   try {
-    const data = jwt.verify(token, JWT_SECRET);
+    jwt.verify(token, JWT_SECRET);
   } catch (e) {
     if (e instanceof jwt.TokenExpiredError) {
       return res.status(401).json({ message: 'Token expired!' });

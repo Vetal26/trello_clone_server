@@ -13,12 +13,13 @@ require('./models/user');
 require('./models/board');
 require('./config/passport')(passport);
 
-const { User, Board, Task, User_Board, TaskList } = models;
 const port = process.env.PORT;
 
 app.use(passport.initialize());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(cors());
 
 app.use(require('./routes'));

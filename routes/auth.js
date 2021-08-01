@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const models = require('../models');
+const passport = require('passport');
 const { User } = models
 const { isValidPassword, genPasswordHash, createToken } = require('../lib/utils');
 
@@ -44,6 +45,12 @@ router.post('/register', async (req, res, next) => {
   } catch (err) {
     res.json({ msg: err });
   }
+});
+
+router.get('/auth/google', passport.authenticate('google', { scope: 'email'}));
+
+router.get('/auth/google/callback', (req, res, next) => {
+  passport.authenticate('google', { failureRedirect: '/login' });
 });
 
 module.exports = router;
