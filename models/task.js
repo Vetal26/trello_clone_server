@@ -31,38 +31,26 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     description: {
-      allowNull: false,
-      unique: false,
       type: DataTypes.STRING,
-      validate: {
-        notNull: {
-          args: true,
-          msg: 'Description is missing',
-        },
-        notEmpty: {
-          args: true,
-          msg: 'Description is required',
-        },
-      },
     },
     isArchved: { 
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
     position: {
-      allowNull: false,
-      unique: false,
+      // allowNull: false,
+      // unique: false,
       type: DataTypes.INTEGER,
-      validate: {
-        notNull: {
-          args: true,
-          msg: 'Position is missing',
-        },
-        notEmpty: {
-          args: true,
-          msg: 'Position is required',
-        },
-      },
+      // validate: {
+      //   notNull: {
+      //     args: true,
+      //     msg: 'Position is missing',
+      //   },
+      //   notEmpty: {
+      //     args: true,
+      //     msg: 'Position is required',
+      //   },
+      // },
     },
   }, {
     sequelize,

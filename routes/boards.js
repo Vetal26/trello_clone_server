@@ -7,7 +7,7 @@ const lists = ['To Do', 'In Process', 'Coded', 'Testing', 'Done'];
 
 router.get('/boards', authMiddleware, async (req, res) => {
   try {
-    const userId = +req.query.userId
+    const userId = req.query.userId
     const boards = await Board.findAll({
       include: {
         model: User_Board,
@@ -26,12 +26,21 @@ router.get('/boards/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params
     const board = await Board.findByPk( id, {
-      include: {
-        model: TaskList,
-        include: {
-          model: Task
+      include: [
+        { 
+          model: User_Board,
+          include: {
+            model: User,
+            attributes: ['email']
+          }
+        },
+        { 
+          model: TaskList,
+          include: {
+            model: Task
+          }
         }
-      }
+      ]
     });
     console.log(board)
     res.json(board);
@@ -75,7 +84,7 @@ router.delete('/boards/:id', authMiddleware, async (req, res) => {
 router.patch('/boards/:id', authMiddleware, async (req, res) => {
   try {
     await Board.update({ name: req.body.name }, { where: { id: req.params.id } });
-    res.status(200)
+    res.status(200).send()
   } catch (error) {
     res.status(500).send({ message: err.message });
   }
