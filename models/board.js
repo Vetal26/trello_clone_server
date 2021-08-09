@@ -7,9 +7,13 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.TaskList, {
         foreignKey: 'BoardId'
       });
-      this.hasMany(models.User_Board, { 
+      this.belongsToMany(models.User, {
+        through: models.User_Board,
         foreignKey: 'boardId'
       });
+      this.hasMany(models.User_Board, {
+        foreignKey: 'boardId'
+      })
     }
   };
   Board.init({

@@ -42,7 +42,6 @@ router.get('/boards/:id', authMiddleware, async (req, res) => {
         }
       ]
     });
-    console.log(board)
     res.json(board);
   } catch (error) {
     res.status(500).send({ message: error.message })

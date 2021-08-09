@@ -49,28 +49,30 @@ router.get('/invite/key/:key', async (req, res) => {
     }
 })
 
-router.get('/invite', authMiddleware, async (req, res) => {
+router.post('/invite', async (req, res) => {
     try {
-        const { uuid, id } = req.query;
-        const key = await InvitationKey.findOne({
+        const { key, userId } = req.body;
+        const invitationKey = await InvitationKey.findOne({
             where: {
-                key: uuid
+                key: key
             }
         });
 
-        if (!key) {
+        if (!invitationKey) {
             res.status(404).send({ message: 'Key not found' })
         }
         
-        const user = await User.findByPk(id)
+        const user = await User.findByPk(userId)
 
         if (!user) {
             res.status(404).send({ message: 'User not found' })
         }
 
-        await User_Board.findOrCreate({ 
-            boardId: key.boardId,
-            userId: id
+        await User_Board.findOrCreate({
+            where: {
+                boardId: invitationKey.boardId,
+                userId: userId
+            }
         });
         res.status(200)
 

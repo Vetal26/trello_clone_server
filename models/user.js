@@ -5,13 +5,17 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      this.hasMany(models.User_Board, { 
+      this.belongsToMany(models.Board, {
+        through: models.User_Board,
         foreignKey: 'userId'
       });
-      // this.belongsToMany(models.Task, {
-      //   through: 'User_Task',
-      //   foreignKey: 'UserId'
-      // });
+      this.hasMany(models.User_Board, {
+        foreignKey: 'userId'
+      })
+      this.belongsToMany(models.Task, {
+        through: models.User_Task,
+        foreignKey: 'userId'
+      });
     }
   };
   User.init({
