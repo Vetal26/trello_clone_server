@@ -7,14 +7,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsToMany(models.Board, {
         through: models.User_Board,
-        foreignKey: 'userId'
+        onDelete: 'CASCADE',
       });
       this.hasMany(models.User_Board, {
-        foreignKey: 'userId'
+        onDelete: 'CASCADE',
       })
       this.belongsToMany(models.Task, {
         through: models.User_Task,
-        foreignKey: 'userId'
+        onDelete: 'CASCADE',
       });
     }
   };

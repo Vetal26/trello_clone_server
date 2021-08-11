@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   User_Task.init({
-    taskId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER
+    TaskId: DataTypes.INTEGER,
+    UserId: DataTypes.INTEGER
   }, {
     sequelize,
     timestamps: false,

@@ -8,7 +8,7 @@ const { InvitationKey, User, User_Board, Board } = models;
 router.get('/invite/:id', authMiddleware, async (req, res) => {
     try {
         const boardId = req.params.id;
-        const invitationKey = await InvitationKey.findOne({
+        let invitationKey = await InvitationKey.findOne({
             where : { boardId }
         });
         if (!invitationKey) {
@@ -68,13 +68,19 @@ router.post('/invite', async (req, res) => {
             res.status(404).send({ message: 'User not found' })
         }
 
-        await User_Board.findOrCreate({
-            where: {
-                boardId: invitationKey.boardId,
-                userId: userId
-            }
-        });
-        res.status(200)
+        const board = await Board.findByPk(invitationKey.boardId);
+        if (!board) {
+            res.status(404).send({ message: 'Board not found' })
+        }
+
+        await user.addBoard(board, { through: { owner: false }})
+        // await User_Board.findOrCreate({
+        //     where: {
+        //         boardId: invitationKey.boardId,
+        //         userId: userId
+        //     }
+        // });
+        res.status(200).send();
 
     } catch (error) {
         res.status(500).send({ message: error.message });

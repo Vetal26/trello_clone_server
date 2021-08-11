@@ -2,11 +2,13 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('User_Tasks', {
-      taskId: {
-        type: Sequelize.INTEGER
+      TaskId: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
       },
-      userId: {
-        type: Sequelize.INTEGER
+      UserId: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
       }
     });
   },

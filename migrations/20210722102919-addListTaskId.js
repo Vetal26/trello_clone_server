@@ -10,6 +10,7 @@ module.exports = {
           },
           key: 'id'
         },
+        onDelete: 'CASCADE',
     });
   },
 

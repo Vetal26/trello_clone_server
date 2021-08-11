@@ -6,11 +6,12 @@ module.exports = (sequelize, DataTypes) => {
   class Task extends Model {
     static associate(models) {
       this.belongsTo(models.TaskList, {
-        foreignKey: 'taskListId'
+        foreignKey: 'taskListId',
+        onDelete: 'CASCADE',
       });
       this.belongsToMany(models.User, {
         through: models.User_Task,
-        foreignKey: 'taskId'
+        onDelete: 'CASCADE',
       });
     }
   };

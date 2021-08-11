@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      UserId: {
         type: Sequelize.INTEGER,
         references: {
           model: {
@@ -16,8 +16,9 @@ module.exports = {
           },
           key: 'id',
         },
+        onDelete: 'CASCADE',
       },
-      boardId: {
+      BoardId: {
         type: Sequelize.INTEGER,
         references: {
           model: {
@@ -25,6 +26,7 @@ module.exports = {
           },
           key: 'id',
         },
+        onDelete: 'CASCADE',
       },
       owner: {
         type: Sequelize.BOOLEAN,
