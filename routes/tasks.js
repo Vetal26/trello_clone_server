@@ -1,24 +1,56 @@
 const router = require('express').Router();
+const { Op } = require('sequelize');
 const models = require('../models');
-const { Task, User, User_Task } = models;
+const { Task, User, User_Task, TaskList, Board } = models;
 const authMiddleware = require('../middleware/auth');
-const { route } = require('./boards');
 
-router.get('/tasks/:id', authMiddleware, async (req, res) => {
+router.get('/tasks/search', authMiddleware, async (req, res) => {
     try {
-        const task = await Task.findByPk(req.params.id, {
+        const { boardId, searchText } = req.query
+        const searchTasks = await Task.findAll({
+            where: {
+                title: {[Op.startsWith]: searchText}},
+            include: [
+                { model: TaskList, where: { BoardId: boardId, name: {[Op.ne]: 'Archive'}}, attributes: []},
+                { model: User, attributes: ['id', 'email']}]
+        });
+        const searchUsers = await Task.findAll({
             include: [
                 { 
-                  model: User,
-                  attributes: ['id','email']
+                    model: User,
+                    where: {
+                        email: {[Op.startsWith]: searchText}
+                    },
+                    attributes: ['id', 'email']
                 },
-              ]  
+                {
+                    model: TaskList,
+                    where: {name: {[Op.ne]: 'Archive'}}
+                }
+                ]
         });
-        res.json(task);
+        const tasks = { searchUsers, searchTasks}
+        res.json(tasks)
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
-});
+})
+
+// router.get('/tasks/:id', authMiddleware, async (req, res) => {
+//     try {
+//         const task = await Task.findByPk(req.params.id, {
+//             include: [
+//                 { 
+//                   model: User,
+//                   attributes: ['id','email']
+//                 },
+//               ]  
+//         });
+//         res.json(task);
+//     } catch (error) {
+//         res.status(500).send({ message: error.message })
+//     }
+// });
 
 router.post('/tasks', authMiddleware, async (req, res) => {
     try {
@@ -47,9 +79,9 @@ router.delete('/tasks', authMiddleware, async (req, res) => {
         const ids = req.body;
         const rowsDestroyed = await Task.destroy({ where: { id: ids}});
         if (rowsDestroyed) {
-            res.send(204)
+            res.sendStatus(204);
           } else {
-            res.send(404);
+            res.sendStatus(404);
           }
     } catch (error) {
         res.status(500).send({ message: error.message })
@@ -106,6 +138,6 @@ router.put('/tasks/restore/:id', authMiddleware, async (req, res) => {
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
-})
+});
 
 module.exports = router;
