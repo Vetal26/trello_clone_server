@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         through: models.User_Task,
         onDelete: 'CASCADE',
       });
+      this.hasMany(models.Activity, {
+        foreignKey: 'TaskId',
+        onDelete: 'CASCADE',
+      })
     }
   };
   Task.init({
@@ -34,24 +38,19 @@ module.exports = (sequelize, DataTypes) => {
     description: {
       type: DataTypes.STRING,
     },
-    isArchved: { 
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
     position: {
-      // allowNull: false,
-      // unique: false,
+      allowNull: false,
       type: DataTypes.INTEGER,
-      // validate: {
-      //   notNull: {
-      //     args: true,
-      //     msg: 'Position is missing',
-      //   },
-      //   notEmpty: {
-      //     args: true,
-      //     msg: 'Position is required',
-      //   },
-      // },
+      validate: {
+        notNull: {
+          args: true,
+          msg: 'Position is missing',
+        },
+        notEmpty: {
+          args: true,
+          msg: 'Position is required',
+        },
+      },
     },
   }, {
     sequelize,

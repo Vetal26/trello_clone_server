@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { Op } = require('sequelize');
 const models = require('../models');
-const { Task, User, User_Task, TaskList, Board } = models;
+const { Task, User, TaskList, Activity } = models;
 const authMiddleware = require('../middleware/auth');
 
 router.get('/tasks/search', authMiddleware, async (req, res) => {
@@ -36,25 +36,11 @@ router.get('/tasks/search', authMiddleware, async (req, res) => {
     }
 })
 
-// router.get('/tasks/:id', authMiddleware, async (req, res) => {
-//     try {
-//         const task = await Task.findByPk(req.params.id, {
-//             include: [
-//                 { 
-//                   model: User,
-//                   attributes: ['id','email']
-//                 },
-//               ]  
-//         });
-//         res.json(task);
-//     } catch (error) {
-//         res.status(500).send({ message: error.message })
-//     }
-// });
-
 router.post('/tasks', authMiddleware, async (req, res) => {
     try {
-        const task = await Task.create(req.body);
+        const task = await Task.create(req.body.task);
+        await task.createActivity(req.body.activity);
+        console.log(task)
         res.json(task);
     } catch (error) {
         res.status(500).send({ message: error.message })
@@ -63,12 +49,13 @@ router.post('/tasks', authMiddleware, async (req, res) => {
 
 router.put('/tasks/:id', authMiddleware, async (req, res) => {
     try {
-        const task = await Task.update( req.body, { 
-            where: { id: req.params.id },
-            returning: true,
-            plain: true
+        const { id } = req.params
+        await Task.update( req.body.task, { 
+            where: { id: id }
         });
-        res.json(task[1])
+        const task = await Task.findByPk(id);
+        await task.createActivity(req.body.activity);
+        res.json(task)
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
@@ -90,7 +77,7 @@ router.delete('/tasks', authMiddleware, async (req, res) => {
 
 router.patch('/tasks/assign', authMiddleware, async (req, res) => {
     try {
-        const { userId, taskId } = req.body;
+        const { userId, taskId, activity } = req.body;
         const task = await Task.findByPk(taskId);
         if (!task) {
             res.status(404).send({ message: 'Task not found' })
@@ -99,9 +86,10 @@ router.patch('/tasks/assign', authMiddleware, async (req, res) => {
         if (!user) {
             res.status(404).send({ message: 'User not found' })
         }
-        await task.addUser(user)
-        const users = await task.getUsers() 
-        res.json(users);
+        await task.addUser(user);
+        await task.getUsers();
+        await task.createActivity(activity);
+        res.json(task);
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
@@ -109,7 +97,7 @@ router.patch('/tasks/assign', authMiddleware, async (req, res) => {
 
 router.delete('/tasks/assign', authMiddleware, async (req, res) => {
     try {
-        const { userId, taskId } = req.query;
+        const { userId, taskId, activity } = req.query;
         const task = await Task.findByPk(taskId);
 
         if (!task) {
@@ -119,9 +107,10 @@ router.delete('/tasks/assign', authMiddleware, async (req, res) => {
         if (!user) {
             res.status(404).send({ message: 'User not found' })
         }
-        await task.removeUser(user)
-        const users = await task.getUsers() 
-        res.json(users);
+        await task.removeUser(user);
+        await task.getUsers();
+        await task.createActivity(activity);
+        res.json(task);
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
@@ -130,9 +119,10 @@ router.delete('/tasks/assign', authMiddleware, async (req, res) => {
 router.put('/tasks/restore/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params
-        await Task.update( req.body, { 
+        await Task.update( req.body.task, { 
             where: { id: id }});
         const task = await Task.findByPk(id);
+        await task.createActivity(req.body.activity);
         await task.removeUsers()
         res.json(task)
     } catch (error) {

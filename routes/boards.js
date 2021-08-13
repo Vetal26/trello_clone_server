@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const models = require('../models');
-const { Board, Task, TaskList, User_Board, User } = models;
+const { Board, Task, TaskList, User_Board, User, Activity } = models;
 const authMiddleware = require('../middleware/auth');
 
 const lists = ['To Do', 'In Process', 'Coded', 'Testing', 'Done', 'Archive'];
@@ -35,10 +35,13 @@ router.get('/boards/:id', authMiddleware, async (req, res) => {
           model: TaskList,
           include: {
             model: Task,
-            include: {
-              model: User,
-              attributes: ['id','email']
-            }
+            include: [
+              {
+                model: User,
+                attributes: ['id','email']
+              },
+              Activity
+            ]
           }
         }
       ]
