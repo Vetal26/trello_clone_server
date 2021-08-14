@@ -37,7 +37,7 @@ router.get('/invite/key/:key', async (req, res) => {
         }
 
         const owner = await User_Board.findOne({ 
-            where: { boardId: invitationKey.boardId, owner: true },
+            where: { BoardId: invitationKey.boardId, owner: true },
             include: [
                 { model: User, attributes: ['email']},
                 { model: Board, attributes: ['name']}
@@ -74,14 +74,7 @@ router.post('/invite', async (req, res) => {
         }
 
         await user.addBoard(board, { through: { owner: false }})
-        // await User_Board.findOrCreate({
-        //     where: {
-        //         boardId: invitationKey.boardId,
-        //         userId: userId
-        //     }
-        // });
         res.status(200).send();
-
     } catch (error) {
         res.status(500).send({ message: error.message });
     }
