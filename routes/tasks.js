@@ -34,13 +34,29 @@ router.get('/tasks/search', authMiddleware, async (req, res) => {
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
+});
+
+router.get('/tasks/:id', authMiddleware, async (req, res) => {
+    try {
+        const task = await Task.findByPk(req.params.id, {
+            include: [
+                { 
+                    model: User,
+                    attributes: ['id', 'email']
+                },
+                Activity
+            ]
+        });
+        res.json(task);
+    } catch (error) {
+        res.status(500).send({ message: error.message })
+    }
 })
 
 router.post('/tasks', authMiddleware, async (req, res) => {
     try {
         const task = await Task.create(req.body.task);
         await task.createActivity(req.body.activity);
-        console.log(task)
         res.json(task);
     } catch (error) {
         res.status(500).send({ message: error.message })
@@ -53,8 +69,16 @@ router.put('/tasks/:id', authMiddleware, async (req, res) => {
         await Task.update( req.body.task, { 
             where: { id: id }
         });
-        const task = await Task.findByPk(id);
-        await task.createActivity(req.body.activity);
+        await Activity.create({
+            ...req.body.activity,
+            TaskId: id
+        })
+        const task = await Task.findByPk(id, {
+            include: [
+                Activity,
+                User
+            ]  
+        });
         res.json(task)
     } catch (error) {
         res.status(500).send({ message: error.message })
@@ -67,9 +91,9 @@ router.delete('/tasks', authMiddleware, async (req, res) => {
         const rowsDestroyed = await Task.destroy({ where: { id: ids}});
         if (rowsDestroyed) {
             res.sendStatus(204);
-          } else {
+        } else {
             res.sendStatus(404);
-          }
+        }
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
@@ -77,6 +101,7 @@ router.delete('/tasks', authMiddleware, async (req, res) => {
 
 router.patch('/tasks/assign', authMiddleware, async (req, res) => {
     try {
+        console.log(req.body)
         const { userId, taskId, activity } = req.body;
         const task = await Task.findByPk(taskId);
         if (!task) {
@@ -87,9 +112,9 @@ router.patch('/tasks/assign', authMiddleware, async (req, res) => {
             res.status(404).send({ message: 'User not found' })
         }
         await task.addUser(user);
-        await task.getUsers();
-        await task.createActivity(activity);
-        res.json(task);
+        const assignUsers = await task.getUsers({attributes: ['id', 'email']});
+        const activityTask = await task.createActivity({activity});
+        res.json({ assignUsers, activityTask });
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
@@ -108,9 +133,9 @@ router.delete('/tasks/assign', authMiddleware, async (req, res) => {
             res.status(404).send({ message: 'User not found' })
         }
         await task.removeUser(user);
-        await task.getUsers();
-        await task.createActivity(activity);
-        res.json(task);
+        const activityTask = await task.createActivity(activity);
+        const assignUsers = await task.getUsers();
+        res.json({assignUsers, activityTask});
     } catch (error) {
         res.status(500).send({ message: error.message })
     }
@@ -123,7 +148,8 @@ router.put('/tasks/restore/:id', authMiddleware, async (req, res) => {
             where: { id: id }});
         const task = await Task.findByPk(id);
         await task.createActivity(req.body.activity);
-        await task.removeUsers()
+        const users = await task.getUsers()
+        await task.removeUsers(users)
         res.json(task)
     } catch (error) {
         res.status(500).send({ message: error.message })
