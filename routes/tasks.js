@@ -133,7 +133,7 @@ router.delete('/tasks/assign', authMiddleware, async (req, res) => {
             res.status(404).send({ message: 'User not found' })
         }
         await task.removeUser(user);
-        const activityTask = await task.createActivity(activity);
+        const activityTask = await task.createActivity({activity});
         const assignUsers = await task.getUsers();
         res.json({assignUsers, activityTask});
     } catch (error) {

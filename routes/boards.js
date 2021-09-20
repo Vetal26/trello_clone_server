@@ -29,7 +29,10 @@ router.get('/boards/:id', authMiddleware, async (req, res) => {
       include: [
         { 
           model: User,
-          attributes: ['id', 'email']
+          attributes: ['id', 'email'],
+          through: {
+            attributes: ['owner']
+          }
         },
         { 
           model: TaskList,
