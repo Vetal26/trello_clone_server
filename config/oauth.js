@@ -5,6 +5,6 @@ module.exports = {
   googleAuth: {
     clientID: GOOGLE_APP_ID,
     clientSecret: GOOGLE_SECURE_KEY,
-    callbackURL: 'http://localhost:4200/oauth2',
+    callbackURL: '/auth/google/callback',
   }
 };

@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require('cors');
 const passport = require('passport');
-const bodyParser = require("body-parser");
 const http = require('http');
 const Sequelize = require("sequelize");
 
@@ -17,19 +16,19 @@ const port = process.env.PORT;
 
 app.use(passport.initialize());
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 
 app.use(require('./routes'));
 
 app.use(function (req, res) {
-  res.status(404).send({ message: 'Opppps.... wrong way!' });
+  res.status(404).json({ message: 'Opppps.... wrong way!' });
 });
 
 app.use((err, req, res) => {
-  res.status(500).send({ message: err.message });
+  res.status(500).json({ message: err.message });
 });
 
 server.listen(port, () => {

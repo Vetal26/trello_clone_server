@@ -16,11 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         through: models.User_Task,
         onDelete: 'CASCADE',
       });
+      this.hasOne(models.RefreshToken);
     }
   };
   User.init({
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
     email: {
       allowNull: false,
       unique: true,
@@ -36,8 +35,12 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     },
-    password: {
-      field: 'password',
+    hash: {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    salt: {
+      allowNull: true,
       type: DataTypes.STRING,
     },
   }, {

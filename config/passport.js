@@ -3,27 +3,30 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('../models/user');
 const config = require('./oauth');
+const fs = require('fs')
+const path = require('path');
+
+const pathToKey = path.join(__dirname, '..', 'id_rsa_pub.pem');
+const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET,
+  secretOrKey: PUB_KEY,
   algorithms: ['RS256'],
 };
 
 module.exports = (passport) => {
   passport.use(
     new JwtStrategy(options, (jwt_payload, done) => {
-      User.findOne({ id: jwt_payload.sub }, (err, user) => {
-        if (err) {
-          return done(err, false);
-        }
-
+      try {
+        const user = User.findByPk(jwt_payload.sub);
         if (user) {
           return done(null, user);
         }
-
         return done(null, false, { message: 'User not found' });
-      });
+      } catch (error) {
+        return done(error, false);
+      }
     }),
   );
 
