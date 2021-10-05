@@ -29,7 +29,7 @@ router.post('/refresh', async (req, res, next) => {
   const { refreshToken } = req.body;
 
   try {
-    const refreshTokenData = await RefreshToken.findOne({ token: refreshToken });
+    const refreshTokenData = await RefreshToken.findOne({ where: { token: refreshToken }});
     if (!refreshTokenData) {
       return res.status(404).json({
         message: 'Refresh token not found',
@@ -40,9 +40,9 @@ router.post('/refresh', async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid refresh token or token expired!' });
     }
 
-    await RefreshToken.deleteOne({ token: refreshToken });
+    await RefreshToken.destroy({ where: { token: refreshToken }});
 
-    const tokenPair = await issueTokensPair(refreshTokenData.user);
+    const tokenPair = await issueTokensPair(refreshTokenData.UserId);
 
     res.status(200).json({
       success: true,
@@ -118,7 +118,7 @@ router.post('/logout', async (req, res, next) => {
   const data = verifyToken(token, true);
 
   try {
-    await RefreshToken.deleteMany({ user: data.sub });
+    await RefreshToken.destroy({ where: { user: data.sub }});
 
     res.status(200).json({
       success: true,
