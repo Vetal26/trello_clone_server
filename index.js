@@ -1,11 +1,10 @@
-const express = require("express");
+const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
 const http = require('http');
-const Sequelize = require("sequelize");
 
-const models = require('./models');
 require('dotenv').config();
+
 const app = express();
 const server = http.createServer(app);
 require('./models/user');
@@ -23,7 +22,7 @@ app.use(cors());
 
 app.use(require('./routes'));
 
-app.use(function (req, res) {
+app.use((req, res) => {
   res.status(404).json({ message: 'Opppps.... wrong way!' });
 });
 
@@ -32,7 +31,7 @@ app.use((err, req, res) => {
 });
 
 server.listen(port, () => {
-    console.log(`App is listening at http://localhost:${port}`);
+  console.log(`App is listening at http://localhost:${port}`);
 });
-  
+
 module.exports = server;

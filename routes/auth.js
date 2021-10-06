@@ -2,8 +2,13 @@ const router = require('express').Router();
 const models = require('../models');
 const passport = require('passport');
 const { User, RefreshToken } = models;
-const { validPassword, genPassword, issueJWT, issueRefreshToken, verifyToken } = require('../lib/utils');
-
+const {
+  validPassword,
+  genPassword,
+  issueJWT,
+  issueRefreshToken,
+  verifyToken,
+} = require('../lib/utils');
 
 const issueTokensPair = async (userId) => {
   try {
@@ -23,13 +28,15 @@ const issueTokensPair = async (userId) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 router.post('/refresh', async (req, res, next) => {
   const { refreshToken } = req.body;
 
   try {
-    const refreshTokenData = await RefreshToken.findOne({ where: { token: refreshToken }});
+    const refreshTokenData = await RefreshToken.findOne({
+      where: { token: refreshToken },
+    });
     if (!refreshTokenData) {
       return res.status(404).json({
         message: 'Refresh token not found',
@@ -37,10 +44,12 @@ router.post('/refresh', async (req, res, next) => {
     }
 
     if (!verifyToken(refreshTokenData.token)) {
-      return res.status(401).json({ message: 'Invalid refresh token or token expired!' });
+      return res
+        .status(401)
+        .json({ message: 'Invalid refresh token or token expired!' });
     }
 
-    await RefreshToken.destroy({ where: { token: refreshToken }});
+    await RefreshToken.destroy({ where: { token: refreshToken } });
 
     const tokenPair = await issueTokensPair(refreshTokenData.UserId);
 
@@ -53,50 +62,51 @@ router.post('/refresh', async (req, res, next) => {
   }
 });
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    
-    const user = await User.findOne({ where: { email }});
+
+    const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({ success: false, message: 'Users does not exist!' });
+      return res.status(401).json({
+        success: false,
+        message: "There isn't an account for this email",
+      });
     }
 
     const isValid = validPassword(password, user.hash, user.salt);
     if (isValid) {
-      const tokenPair = await issueTokensPair(user.id)
+      const tokenPair = await issueTokensPair(user.id);
       res.status(200).json({
         success: true,
         ...tokenPair,
       });
     } else {
-      res.status(401).json({ success: false, message: 'You entered the wrong password' });
+      res.status(401).json({ success: false, message: 'Incorrect password' });
     }
   } catch (error) {
-    res.json({ success: false, msg: error });
-    next(error);
+    res.status(401).json({ success: false, message: error });
+    // next(error);
   }
 });
 
 router.post('/register', async (req, res, next) => {
-  console.log(req.body)
-
   try {
     const { email, password } = req.body;
-    const isExistsUser = await User.findOne({where: { email }})
-    if(isExistsUser) {
-      return res.status(409).json({ message: 'User with email already exists!' });
+    const isExistsUser = await User.findOne({ where: { email } });
+    if (isExistsUser) {
+      return res.status(409).json({ message: 'That email is already in use' });
     }
 
     const saltHash = genPassword(password);
     const newUser = new User({
-      email: email,
+      email,
       hash: saltHash.hash,
       salt: saltHash.salt,
     });
 
     const user = await newUser.save();
-    const tokenPair = await issueTokensPair(user.id)
+    const tokenPair = await issueTokensPair(user.id);
 
     res.status(200).json({
       success: true,
@@ -118,7 +128,7 @@ router.post('/logout', async (req, res, next) => {
   const data = verifyToken(token, true);
 
   try {
-    await RefreshToken.destroy({ where: { user: data.sub }});
+    await RefreshToken.destroy({ where: { user: data.sub } });
 
     res.status(200).json({
       success: true,
@@ -128,7 +138,7 @@ router.post('/logout', async (req, res, next) => {
   }
 });
 
-router.get('/auth/google', passport.authenticate('google', { scope: 'email'}));
+router.get('/auth/google', passport.authenticate('google', { scope: 'email' }));
 
 router.get('/auth/google/callback', (req, res, next) => {
   passport.authenticate('google', { failureRedirect: '/login' });

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const fs = require('fs')
+const fs = require('fs');
 const path = require('path');
 
 const pathToPubliceKey = path.join(__dirname, '..', 'id_rsa_pub.pem');
@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
   }
 
   const token = authHeader.replace('Bearer ', '');
-  console.log(authHeader)
+
   try {
     jwt.verify(token, PUB_KEY);
   } catch (e) {
