@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const { GOOGLE_APP_ID, GOOGLE_SECURE_KEY } = process.env;
 
 module.exports = {
@@ -6,5 +7,5 @@ module.exports = {
     clientID: GOOGLE_APP_ID,
     clientSecret: GOOGLE_SECURE_KEY,
     callbackURL: '/auth/google/callback',
-  }
+  },
 };

@@ -30,7 +30,7 @@ const issueTokensPair = async (userId) => {
   }
 };
 
-router.post('/refresh', async (req, res, next) => {
+router.post('/refresh', async (req, res) => {
   const { refreshToken } = req.body;
 
   try {
@@ -44,9 +44,10 @@ router.post('/refresh', async (req, res, next) => {
     }
 
     if (!verifyToken(refreshTokenData.token)) {
-      return res
-        .status(401)
-        .json({ message: 'Invalid refresh token or token expired!' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid refresh token or token expired!',
+      });
     }
 
     await RefreshToken.destroy({ where: { token: refreshToken } });
@@ -58,7 +59,9 @@ router.post('/refresh', async (req, res, next) => {
       ...tokenPair,
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    res.status(401).json({ message: error });
+    // next(error);
   }
 });
 
@@ -86,7 +89,6 @@ router.post('/login', async (req, res) => {
     }
   } catch (error) {
     res.status(401).json({ success: false, message: error });
-    // next(error);
   }
 });
 
@@ -128,20 +130,27 @@ router.post('/logout', async (req, res, next) => {
   const data = verifyToken(token, true);
 
   try {
-    await RefreshToken.destroy({ where: { user: data.sub } });
+    await RefreshToken.destroy({ where: { UserId: data.sub } });
 
     res.status(200).json({
       success: true,
     });
   } catch (error) {
-    next(error);
+    res.json({ success: false, message: error });
   }
 });
 
-router.get('/auth/google', passport.authenticate('google', { scope: 'email' }));
-
-router.get('/auth/google/callback', (req, res, next) => {
-  passport.authenticate('google', { failureRedirect: '/login' });
+router.get('/auth/google', (req, res, next) => {
+  passport.authenticate('google', {
+    scope: 'email',
+  })(req, res, next);
 });
+
+router.get(
+  '/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: 'http://localhost:4200/signup',
+  }),
+);
 
 module.exports = router;
