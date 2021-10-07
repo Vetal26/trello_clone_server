@@ -39,7 +39,6 @@ module.exports = (passport) => {
         authorizationURL: 'http://localhost:4200/oauth2',
       },
       (request, accessToken, refreshToken, profile, done) => {
-        console.log(111111111);
         process.nextTick(() => {
           done(null, profile);
         });

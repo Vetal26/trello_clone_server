@@ -146,11 +146,28 @@ router.get('/auth/google', (req, res, next) => {
   })(req, res, next);
 });
 
-router.get(
-  '/auth/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: 'http://localhost:4200/signup',
-  }),
-);
+router.get('/auth/google/callback', (req, res, next) => {
+  passport.authenticate('google', async (err, userData, info) => {
+    console.log('Google user data', userData);
+
+    if (!req.user) {
+      let user = await User.findOne({
+        where: { socialId: userData.id, provider: userData.provider },
+      });
+
+      if (!user) {
+        user = await User.create({
+          email: userData.emails[0].value,
+          socialId: userData.id,
+          provider: userData.provider,
+        });
+      }
+
+      req.logIn(user, () => {
+        return res.json({ message: 'logged in with Google!', user });
+      });
+    }
+  })(req, res, next);
+});
 
 module.exports = router;
